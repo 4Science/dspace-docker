@@ -1,0 +1,43 @@
+# The contents of this file are subject to the license and copyright
+# detailed in the LICENSE and NOTICE files at the root of the source
+
+version: '3.3'
+
+networks:
+  backend:
+
+volumes:
+  dspace: {}
+  postgres: {}
+
+services:
+  postgres:
+    image: postgres:9.6.2
+    networks:
+      backend:
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  dspace:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        CRIS_VERSION: dspace-cris-5.7.0
+    networks:
+      backend:
+    environment:
+      POSTGRES_DB_HOST: postgres
+      DSPACE_WEBAPPS: "jspui xmlui rest oai rdf sword swordv2"
+      CATALINA_OPTS: "-Dorg.apache.el.parser.SKIP_IDENTIFIER_CHECK=true -Xmx2048m -Xms2048m -XX:MaxPermSize=512m"
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWD: admin123
+      # ADMIN_FIRSTNAME: DSpace
+      # ADMIN_LASTNAME: Admin
+      # ADMIN_LANGUAGE: en
+    depends_on:
+      - postgres
+    volumes:
+      - dspace:/dspace
+    ports:
+      - "8080:8080"
