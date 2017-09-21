@@ -56,6 +56,13 @@ RUN ant init_installation init_configs install_code copy_webapps \
     && sed -i s/CONFIDENTIAL/NONE/ $CATALINA_HOME/webapps/rest/WEB-INF/web.xml
 
 
+#RUN useradd -m dspace \
+#    && chown -R dspace ${DSPACE_HOME}
+#USER dspace
+
+# COPY start scripts
+COPY ./fs /
+
 WORKDIR ${DSPACE_HOME}
 EXPOSE 8080
 ENTRYPOINT ["wait-for-postgres.sh", "postgres"]
