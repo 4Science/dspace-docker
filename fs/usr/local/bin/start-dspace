@@ -30,5 +30,10 @@ if [ -n "$DSPACE_WEBAPPS" ]; then
     done
 fi
 
+# Deploy to jspui to ROOT context to avoid jspui path
+if [ ! -d ${CATALINA_HOME}/webapps/ROOT ]; then
+    ln -s ${CATALINA_HOME}/webapps/jspui ${CATALINA_HOME}/webapps/ROOT
+fi
+
 # Start Tomcat
 exec catalina.sh run

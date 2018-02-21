@@ -29,7 +29,7 @@ services:
     environment:
       POSTGRES_DB_HOST: postgres
       DSPACE_WEBAPPS: "jspui xmlui rest oai rdf sword swordv2"
-      CATALINA_OPTS: "-Dorg.apache.el.parser.SKIP_IDENTIFIER_CHECK=true -Xmx2048m -Xms2048m -XX:MaxPermSize=512m"
+      CATALINA_OPTS: "-Dorg.apache.el.parser.SKIP_IDENTIFIER_CHECK=true -Xmx4096m -Xms2048m -XX:MaxPermSize=1024m"
       ADMIN_EMAIL: admin@example.com
       ADMIN_PASSWD: admin123
       # ADMIN_FIRSTNAME: DSpace
