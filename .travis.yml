@@ -7,21 +7,13 @@ addons:
       - docker-ce
 language: bash
 script:
-  - chmod a+x build.sh
-  - ./build.sh
-  - travis_wait 40 ./build.sh build_image
-
-  # get environment variables
-  - source VERSION
-
-  - export DSPACE_VERSION=${DSPACE_VERSION:-dspace-cris-5.8.0}
-  - export DOCKER_TAG_tmp=$(echo $DSPACE_VERSION |cut -d- -f3-)
-  - export DOCKER_TAG=${DOCKER_TAG:-$DOCKER_TAG_tmp}
-  - export DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME:-4science/dspace-cris}
-
-  - echo ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+  - source ./build.sh
+  - clone
+  - merge
+  - travis_wait 40 build_image
 
   # tag the image
+  - echo ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
   - docker image tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${DOCKER_IMAGE_NAME}:latest
   # push image
   - >

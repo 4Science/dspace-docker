@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set +x -o pipefail
+#set -e
 
 # get environment variables
 source VERSION
@@ -9,13 +10,12 @@ DSPACE_VERSION=${DSPACE_VERSION:-dspace-cris-5.8.0}
 DSPACE_VCS_URL=${DSPACE_VCS_URL:-https://github.com/4science/dspace}
 
 DOCKER_TAG_tmp=$(echo $DSPACE_VERSION |cut -d- -f3-)
-export DOCKER_TAG=${DOCKER_TAG:-$DOCKER_TAG_tmp}
+DOCKER_TAG=${DOCKER_TAG:-$DOCKER_TAG_tmp}
 
-export DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME:-4science/dspace-cris}
+DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME:-4science/dspace-cris}
 
 
-
-function build_image(){
+function build(){
      docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} \
      --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
      --build-arg VCS_REF="${TRAVIS_COMMIT}" \
@@ -28,7 +28,7 @@ function build_image(){
      --build-arg MODS_VCS_REF="${MODS_VCS_REF}" .
 }
 
-function get_sources(){
+function clone(){
     echo "Clone 4science/dspace (=dspace-cris)"
     git clone --depth 1 --branch ${DSPACE_VERSION} ${DSPACE_VCS_URL} dspace
 
@@ -43,29 +43,26 @@ function merge(){
     [ -n "${MODS_VCS_URL}" ] && rsync -a mods/ dspace/ || true
 }
 
-
-
-if [[ $# -eq 0 ]]; then
-  get_sources
-  merge
-# build image
-if [ -n ${CI} ]; then
-    echo "Running in CI"
-else
-    TRAVIS_COMMIT=$(git rev-parse HEAD)
-    build_image
-fi
-
-elif [[ "${1}" == "build" ]]; then
-  if [ -n ${CI} ]; then
-    echo "Running in CI"
-    build_image
-   else
-     TRAVIS_COMMIT=$(git rev-parse HEAD)
-     build_image
-   fi
-elif [[ "${1}" == "clone" ]]; then
-  get_sources
+if [[ "${1}" == "clone" ]]; then
+  clone
 elif [[ "${1}" == "merge" ]]; then
    merge
+elif [[ "${1}" == "build" ]]; then
+  if [[ -n ${CI} ]]; then
+    echo "Running in CI"
+   else
+     TRAVIS_COMMIT=$(git rev-parse HEAD)
+   fi
+    build
+fi
+
+if [[ $# -eq 0 ]]; then
+  if [[ ! -n ${CI} ]]; then
+    echo "no CI and no arguments (exec clone merge build"
+    clone
+    merge
+    build
+#  else
+#    echo "CI without arguments => exiting"
+  fi
 fi
