@@ -10,7 +10,7 @@ script:
   - source ./build.sh
   - clone
   - merge
-  - travis_wait 40 build_image
+  - travis_wait 40 build
 
   # tag the image
   - echo ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
