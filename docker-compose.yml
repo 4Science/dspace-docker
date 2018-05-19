@@ -19,11 +19,24 @@ services:
       - postgres:/var/lib/postgresql/data
 
   dspace:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-      args:
-        CRIS_VERSION: dspace-cris-5.7.0
+    image: 4science/dspace-cris:cris-5.8.0
+#    build:
+#      context: ./
+#      dockerfile: Dockerfile
+# Add meta information to the image
+#      args:
+# Specify the base repository 
+#        - DSPACE_VERSION=""
+#        - DSPACE_VCS_URL=""
+#        - DSPACE_VCS_REF=""
+# Specify the repository with custom changes
+#        - MODS_VERSION=""
+#        - MODS_VCS_URL=""
+#        - MODS_VCS_REF=""
+#        - BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+#        - VCS_REF="${TRAVIS_COMMIT}"
+#        - VERSION="${TRAVIS_TAG}"
+
     networks:
       backend:
     environment:

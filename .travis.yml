@@ -7,20 +7,18 @@ addons:
       - docker-ce
 language: bash
 script:
-# get environment variables
-- export CRIS_VERSION=$(cat VERSION)
-- export DOCKER_TAG=$(cat VERSION |cut -d- -f2-)
-- export DOCKER_IMAGE_NAME="4science/dspace-cris"
-- docker version
-# build image
-- travis_wait 40 docker build -t ${DOCKER_IMAGE_NAME}:build --build-arg VERSION="${TRAVIS_TAG}" --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` --build-arg VCS_REF="${TRAVIS_COMMIT}" --build-arg CRIS_VERSION="${CRIS_VERSION}" .
-# tag the image
-- docker tag ${DOCKER_IMAGE_NAME}:build ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
-- docker tag ${DOCKER_IMAGE_NAME}:build ${DOCKER_IMAGE_NAME}:latest
-# push image
-- >
-  if [ "${TRAVIS_BRANCH}" == "master" ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
-    docker login -u="${DOCKER_USER}" -p="${DOCKER_PASS}"
-    docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
-    docker push ${DOCKER_IMAGE_NAME}:latest
-  fi
+  - source ./build.sh
+  - clone
+  - merge
+  - travis_wait 40 build
+
+  # tag the image
+  - echo ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+  - docker image tag ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} ${DOCKER_IMAGE_NAME}:latest
+  # push image
+  - >
+    if [ "${TRAVIS_BRANCH}" == "master" ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
+      docker login -u="${DOCKER_USER}" -p="${DOCKER_PASS}"
+      docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+      docker push ${DOCKER_IMAGE_NAME}:latest
+    fi

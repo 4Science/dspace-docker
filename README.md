@@ -1,7 +1,8 @@
 # dspace-docker
 [![Build Status](https://travis-ci.org/4Science/dspace-docker.svg?branch=master)](https://travis-ci.org/4Science/dspace-docker)
 
-Docker images for dspace &amp; dspace-cris (experimental)
+
+[Docker images for dspace &amp; dspace-cris](https://hub.docker.com/r/4science/dspace-cris/) (experimental)
 
 
 ### Getting Started
